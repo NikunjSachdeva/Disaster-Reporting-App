@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Report Management - Disaster Reporting Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_report_management.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul>
+                <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('report_manage') }}" class="active">Manage Reports</a></li>
+                <li><a href="{{ url_for('admin_users') }}">Manage Users</a></li>
+                <li><a href="{{ url_for('admin_settings') }}">Settings</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <header>
+                <h1>Manage Reports</h1>
+                <div class="filter-section">
+                    <input type="text" id="search" placeholder="Search by location or type...">
+                    <select id="filterStatus">
+                        <option value="all">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                </div>
+            </header>
+            <section class="content">
+                {% if reports %}
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Report ID</th>
+                            <th>Disaster Type</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in reports %}
+                        <tr>
+                            <td>{{ report.id }}</td>
+                            <td>{{ report.disaster_type }}</td>
+                            <td>{{ report.description }}</td>
+                            <td>{{ report.location }}</td>
+                            <td class="status {{ report.status|lower }}">{{ report.status }}</td>
+                            <td>
+                                <form action="{{ url_for('resolve_report', report_id=report.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn resolve-btn">Resolve</button>
+                                </form>
+                                <form action="{{ url_for('delete_report', report_id=report.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn delete-btn">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div id="noReports" class="no-reports-message">No reports available.</div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById('search');
+        const filterStatus = document.getElementById('filterStatus');
+
+        // Event listeners for search and filter
+        searchInput.addEventListener('input', function () {
+            const query = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.report-table tbody tr');
+
+            rows.forEach(row => {
+                const location = row.cells[3].textContent.toLowerCase();
+                const disasterType = row.cells[1].textContent.toLowerCase();
+
+                if (location.includes(query) || disasterType.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        filterStatus.addEventListener('change', function () {
+            const status = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.report-table tbody tr');
+
+            rows.forEach(row => {
+                const rowStatus = row.querySelector('.status').textContent.toLowerCase();
+
+                if (status === 'all' || rowStatus === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>

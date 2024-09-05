@@ -1,0 +1,243 @@
+<!-- templates_user/report.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Disaster</title>
+</head>
+<body>
+    <h1>Report a Disaster</h1>
+    <form action="{{ url_for('submit_report') }}" method="POST">
+        <label for="disasterType">Disaster Type:</label>
+        <select id="disasterType" name="disaster_type" required="">
+            <option value="" disabled="" selected="">Select disaster type</option>
+            <option value="flood">Flood</option>
+            <option value="road_blockage">Road Blockage</option>
+            <option value="damage">Damage</option>
+        </select>
+<br>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea><br>
+
+        <label for="location">Current Location (lat, long):</label>
+        <input type="text" id="location" name="location" required><br>
+        <button type="button" id="getLocationBtn" class="btn-secondary">Use My Live Location</button>
+        <button type="submit">Submit Report</button>
+    </form>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const getLocationBtn = document.getElementById("getLocationBtn");
+    const locationInput = document.getElementById("location");
+
+    // Function to get live location
+    function getLiveLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    // Function to show position in the location input
+    function showPosition(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        locationInput.value = `Lat: ${latitude}, Lon: ${longitude}`;
+    }
+
+    // Function to handle geolocation errors
+    function showError(error) {
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("An unknown error occurred.");
+                break;
+        }
+    }
+
+    // Event listener for live location button
+    getLocationBtn.addEventListener("click", getLiveLocation);
+});
+</script>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Disaster</title>
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1f1c2c, #928DAB);
+            color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        /* Main container */
+        .report-container {
+            background: rgba(46, 46, 46, 0.95);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #4a90e2;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #555;
+            border-radius: 8px;
+            background: #2e2e2e;
+            color: #f5f5f5;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #4a90e2;
+        }
+
+        button {
+            background: #4a90e2;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            font-size: 16px;
+            margin: 5px;
+            width: calc(50% - 12px);
+        }
+
+        .btn-secondary {
+            background: #555;
+        }
+
+        button:hover {
+            background: #357ABD;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="report-container">
+        <h1>Report a Disaster</h1>
+        <form action="{{ url_for('submit_report') }}" method="POST">
+            <label for="disasterType">Disaster Type:</label>
+            <select id="disasterType" name="disaster_type" required="">
+                <option value="" disabled="" selected="">Select disaster type</option>
+                <option value="flood">Flood</option>
+                <option value="road_blockage">Road Blockage</option>
+                <option value="damage">Damage</option>
+            </select>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required></textarea>
+
+            <label for="location">Current Location (lat, long):</label>
+            <input type="text" id="location" name="location" placeholder="Lat: xx, Lon: xx" required>
+
+            <div style="display: flex; justify-content: space-between;">
+                <button type="button" id="getLocationBtn" class="btn-secondary">Use My Live Location</button>
+                <button type="submit">Submit Report</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const getLocationBtn = document.getElementById("getLocationBtn");
+            const locationInput = document.getElementById("location");
+
+            // Function to get live location
+            function getLiveLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition, showError);
+                } else {
+                    alert("Geolocation is not supported by this browser.");
+                }
+            }
+
+            // Function to show position in the location input
+            function showPosition(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                locationInput.value = `Lat: ${latitude}, Lon: ${longitude}`;
+            }
+
+            // Function to handle geolocation errors
+            function showError(error) {
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        alert("User denied the request for Geolocation.");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        alert("Location information is unavailable.");
+                        break;
+                    case error.TIMEOUT:
+                        alert("The request to get user location timed out.");
+                        break;
+                    case error.UNKNOWN_ERROR:
+                        alert("An unknown error occurred.");
+                        break;
+                }
+            }
+
+            // Event listener for live location button
+            getLocationBtn.addEventListener("click", getLiveLocation);
+        });
+    </script>
+</body>
+
+</html>

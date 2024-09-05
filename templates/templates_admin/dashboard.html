@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Disaster Reporting Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul>
+                <li><a href="{{ url_for('admin_dashboard') }}" class="active">Dashboard</a></li>
+                <!-- <li><a href="{{ url_for('view_reports') }}">Manage Reports</a></li> -->
+                <!-- <li><a href="{{ url_for('user_support') }}">Help & Support</a></li> -->
+                <!-- <li><a href="{{ url_for('login') }}">Logout</a></li> -->
+            </ul>
+        </div>
+        <div class="main-content">
+            <header>
+                <h1>Welcome, Admin</h1>
+                <p>Monitor disaster reports, manage response actions, and ensure effective communication.</p>
+            </header>
+            <section class="dashboard-overview">
+                <div class="card">
+                    <h3>Total Reports</h3>
+                    <p id="total-reports">{{ total_reports }}</p>
+                </div>
+                <div class="card">
+                    <h3>Active Incidents</h3>
+                    <p id="active-incidents">{{ active_incidents }}</p>
+                </div>
+                <div class="card">
+                    <h3>Reports Resolved</h3>
+                    <p id="reports-resolved">{{ reports_resolved }}</p>
+                </div>
+                <div class="card">
+                    <h3>Users Reporting</h3>
+                    <p id="reporting-users">{{ reporting_users }}</p>
+                </div>
+            </section>
+
+            <section class="recent-reports">
+                <h2>Recent Disaster Reports</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Report ID</th>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-table">
+                        {% for report in recent_reports %}
+                        <tr>
+                            <td>{{ report[0] }}</td>
+                            <td>{{ report[1] }}</td>
+                            <td>{{ report[2] }}</td>
+                            <td>{{ report[3] }}</td>
+                            <td>{{ report[4] }}</td>
+                            <td>
+                                <button class="resolve-btn" data-id="{{ report[0] }}">Resolve</button>
+                                <button class="location-btn" data-lat="{{ report[5] }}" data-lng="{{ report[6] }}">Go to Location</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle Resolve Button Click
+            document.querySelectorAll('.resolve-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const reportId = button.getAttribute('data-id');
+                    
+                    // Update report status to "Resolved"
+                    await fetch(`/admin/report_manage/resolve/${reportId}`, {
+                        method: 'POST'
+                    });
+                    
+                    // Update the status in the table
+                    button.closest('tr').querySelector('td:nth-child(5)').innerText = 'Resolved';
+                });
+            });
+
+            // Handle Go to Location Button Click
+            document.querySelectorAll('.location-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const lat = button.getAttribute('data-lat');
+                    const lng = button.getAttribute('data-lng');
+                    
+                    // Open a new window with Google Maps showing the location
+                    window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
